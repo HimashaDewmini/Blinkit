@@ -1,18 +1,30 @@
 import { Resend } from 'resend';
+import dotenv from 'dotenv'
+dotenv.config()
 
-const resend = new Resend('re_123456789');
+if(!process.env.RESEND_API){
+    console.log("Provide RESEND_API in side the .env file")
+}
 
-(async function () {
-  const { data, error } = await resend.emails.send({
-    from: 'Acme <onboarding@resend.dev>',
-    to: ['delivered@resend.dev'],
-    subject: 'Hello World',
-    html: '<strong>It works!</strong>',
-  });
+const resend = new Resend(process.env.RESEND_API);
 
-  if (error) {
-    return console.error({ error });
-  }
+const sendEmail = async({sendTo, subject, html })=>{
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'Binkeyit <noreply@amitprajapati.co.in>',
+            to: sendTo,
+            subject: subject,
+            html: html,
+        });
 
-  console.log({ data });
-})();
+        if (error) {
+            return console.error({ error });
+        }
+
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export default sendEmail
